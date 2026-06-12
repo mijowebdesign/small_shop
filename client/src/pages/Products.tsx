@@ -4,7 +4,7 @@ import ProductCard from "@/components/app/ProductCard";
 import { useAppDispatch, useAppSelector } from "@/state/hooks";
 import type { Product } from "@/types/Products";
 import { fetchProducts } from "@/state/product/productSlice";
-import { fetchCategories } from "@/state/category/categorySlice";
+
 import {
   Pagination,
   PaginationContent,
@@ -20,16 +20,18 @@ const Products: React.FC = () => {
     (state) => state.product
   );
   const { categories } = useAppSelector((state) => state.category);
-  const { categoryName } = useParams();
+  const { categorySlug } = useParams();
 
   const currentCategory = categories.find(
-    (cat) => cat.slug === categoryName || cat.name?.en === categoryName || cat.name?.sr === categoryName
+    (cat) => cat.slug === categorySlug
   );
   const categoryId = currentCategory?.id;
 
   const PRODUTS_PER_PAGE = 9;
 
   const dispatch = useAppDispatch();
+
+  
 
   useEffect(() => {
     dispatch(
@@ -68,7 +70,7 @@ const Products: React.FC = () => {
                   key={product._id}
                   id={product._id}
                   title={product.title}
-                  categoryName={product?.category?.name?.sr || ""} 
+                  categoryName={product?.mainCategory?.name?.sr || ""} 
                   imageUrl={product.imageUrl}
                   price={product.price}
                 />

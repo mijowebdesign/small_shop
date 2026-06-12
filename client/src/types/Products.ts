@@ -9,6 +9,7 @@ export interface Category {
         en: string;
         sr: string;
     };
+    parent?: string 
 }
 
 
@@ -17,7 +18,8 @@ export interface Product {
     title: string;
     description: string;
     imageUrl: string;
-    category: Category;
+    mainCategory: Category;
+    subCategory: Category;
     price: number;
 }
 

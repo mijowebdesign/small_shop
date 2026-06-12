@@ -1,15 +1,17 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import type { Category } from '@/types/Products';
-import { getCategories } from '@/services/categoryService';
+import { getCategories, getSubCategoriesByCategoryId } from '@/services/categoryService';
 
 interface CategoryState {
     categories: Category[];
+    selectedSubCategories: Category[];
     loading: boolean;
     error: string | null;
 }
 
 const initialState: CategoryState = {
     categories: [],
+    selectedSubCategories: [],
     loading: false,
     error: null,
 };
@@ -18,13 +20,18 @@ export const fetchCategories = createAsyncThunk('category/fetchCategories', asyn
     return await getCategories();
 });
 
+export const fetchSubCategoriesByCategoryId = createAsyncThunk('category/fetchSubCategoriesByCategoryId', async (id: string) => {
+    return await getSubCategoriesByCategoryId(id);
+   
+});
+
 const categorySlice = createSlice({
     name: 'category',
     initialState,
     reducers: {
         clearError(state) {
             state.error = null;
-        }
+        }   
     },
     extraReducers: (builder) => {
         builder
@@ -39,6 +46,18 @@ const categorySlice = createSlice({
             .addCase(fetchCategories.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message || 'Greška pri učitavanju kategorija';
+            })
+                 .addCase(fetchSubCategoriesByCategoryId.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchSubCategoriesByCategoryId.fulfilled, (state, action) => {
+                state.loading = false;
+                state.selectedSubCategories = action.payload || [];
+            })
+            .addCase(fetchSubCategoriesByCategoryId.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || 'Greška pri učitavanju podkategorija';
             });
     }
 });

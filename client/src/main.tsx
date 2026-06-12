@@ -5,6 +5,7 @@ import App from './App.tsx'
 import { store } from './state/store.ts'
 import { Provider } from 'react-redux'
 import { AuthProvider } from './context/AuthContext'
+import reportWebVitals from './reportWebVitals'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -15,3 +16,5 @@ createRoot(document.getElementById('root')!).render(
     </Provider>
   </StrictMode>,
 )
+
+reportWebVitals(console.log);

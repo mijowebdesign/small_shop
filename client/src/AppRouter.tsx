@@ -93,7 +93,7 @@ const AppRouter: React.FC = () => {
       />
 
       <Route 
-  path="/products/:categoryName" 
+  path="/products/:categorySlug" 
   element={<AppLayout><Products /></AppLayout>} 
 />
       

@@ -40,6 +40,7 @@ const ProductCard: React.FC<{ id: string; title: string; categoryName: string; p
         <p className="text-sm text-muted-foreground">
           Ovo je primer klikabilne kartice koja koristi shadcn i Next.js Link. 
           Cela površina je interaktivna.
+          test
         </p>
       </CardContent>
 
