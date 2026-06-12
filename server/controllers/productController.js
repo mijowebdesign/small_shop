@@ -12,14 +12,14 @@ export const getProducts = async (req, res) => {
       if (!mongoose.Types.ObjectId.isValid(categoryId)) {
         return res.status(400).json({ message: 'Nevalidan ID kategorije' });
       }
-      filter.category = categoryId;
+      filter.mainCategory = categoryId;
     }
 
     const totalProducts = await Product.countDocuments(filter);
     const products = await Product.find(filter)
       .skip(skip)
       .limit(parseInt(limit))
-      .populate('category');
+      .populate('mainCategory');
 
     res.status(200).json({
       products,
@@ -35,7 +35,7 @@ export const getProducts = async (req, res) => {
 
 export const getProductById = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id).populate('category');
+    const product = await Product.findById(req.params.id).populate('mainCategory');
     if (!product) {
       return res.status(404).json({ message: 'Proizvod nije pronađen' });
     }
@@ -49,7 +49,7 @@ export const createProduct = async (req, res) => {
   try {
     const newProduct = new Product(req.body);
     await newProduct.save();
-    const populatedProduct = await Product.findById(newProduct._id).populate('category');
+    const populatedProduct = await Product.findById(newProduct._id).populate('mainCategory');
     res.status(201).json(populatedProduct);
   } catch (error) {
     console.error('Greška pri kreiranju proizvoda:', error);
@@ -67,7 +67,7 @@ export const updateProduct = async (req, res) => {
       req.params.id, 
       updateData, 
       { new: true, runValidators: true }
-    ).populate('category');
+    ).populate('mainCategory');
 
     if (!updatedProduct) {
       return res.status(404).json({ message: 'Proizvod nije pronađen' });

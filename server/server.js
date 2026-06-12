@@ -28,8 +28,7 @@ app.use(cookieParser());
 app.use(passport.initialize()); // Initialize passport
 
 // Routes
-app.use('/auth', authRoutes);
-   console.log('Učitavam /users rutu...');  
+app.use('/auth', authRoutes); 
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);

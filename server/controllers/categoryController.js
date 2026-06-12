@@ -2,7 +2,16 @@ import Category from '../models/Category.js';
 
 export const getCategories = async (req, res) => {
   try {
-    const categories = await Category.find();
+    const categories = await Category.find({parent: null});
+    res.status(200).json(categories);
+  } catch (error) {
+    res.status(500).json({ message: 'Greška pri preuzimanju kategorija' });
+  }
+};
+
+export const getSubCategories = async (req, res) => {
+  try {
+    const categories = await Category.find({parent: req.params.parentId}); //parentId
     res.status(200).json(categories);
   } catch (error) {
     res.status(500).json({ message: 'Greška pri preuzimanju kategorija' });

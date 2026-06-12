@@ -16,7 +16,8 @@ const categorySchema = new mongoose.Schema({
   description:{
     en: { type: String },
     sr: { type: String }, 
-  }
+  },
+  parent: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', default: null }
 }, { 
   timestamps: true,
   toJSON: {
