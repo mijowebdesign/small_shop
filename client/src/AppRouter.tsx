@@ -7,7 +7,6 @@ import MainNavbar from './components/app/MainNavbar';
 import { useAuth } from './context/AuthContext';
 import UserPanel from './pages/UserPanel';
 import ProductDetails from './pages/ProductDetails';
-import AddProduct from './pages/AddProduct';
 import Products from './pages/Products';
 
 
@@ -46,7 +45,7 @@ const ProtectedRoute = ({
 const AppRouter: React.FC = () => {
   const { user, loading } = useAuth();
 
-  if (loading) return <div>Loading...</div>;
+
 
   return (
     <Routes>
@@ -82,19 +81,10 @@ const AppRouter: React.FC = () => {
         path="/details/:id" 
         element={<AppLayout><ProductDetails /></AppLayout>} 
       />
-     
-      <Route
-        path="/products/new"
-        element={
-          <ProtectedRoute allowedRoles={['manager', 'admin']}>
-            <AddProduct />
-          </ProtectedRoute>
-        }
-      />
 
       <Route 
-  path="/products/:categorySlug" 
-  element={<AppLayout><Products /></AppLayout>} 
+        path="/products/:categorySlug" 
+        element={<AppLayout><Products /></AppLayout>} 
 />
       
       <Route 

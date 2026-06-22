@@ -9,23 +9,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
 import { isUserAdmin, isUserManager} from "@/utils/utils";  
 
 import NavbarItems from "./NavbarItems";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import logo from "@/assets/images.png"; 
 import LoginDialog from "./LoginDialog";
+import AddProductDialog from "./AddProductDialog";
 
 import { useAuth } from "@/context/AuthContext";
 
 const MainNavbar = () => {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isAddProductOpen, setIsAddProductOpen] = useState(false);
   const { user, logout } = useAuth();
 
   const onLogout = async () => {
@@ -53,26 +49,31 @@ const MainNavbar = () => {
 
         <div className="flex items-center gap-4">
           {(isUserAdmin(user) || isUserManager(user)) && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Link
-                    to="/products/new"
-                    className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span className="hidden sm:inline">Dodaj</span>
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Dodaj novi proizvod</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors outline-none cursor-pointer">
+                <Plus className="w-4 h-4" />
+                <span className="hidden sm:inline">Dodaj</span>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-40">
+                <DropdownMenuItem onSelect={() => setIsAddProductOpen(true)} className="cursor-pointer">
+                  Proizvod
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/categories/new" className="cursor-pointer">Kategorija</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/subcategories/new" className="cursor-pointer">Podkategorija</Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
           <LoginDialog 
             open={isLoginOpen} 
             onOpenChange={setIsLoginOpen} 
+          />
+          <AddProductDialog 
+            open={isAddProductOpen} 
+            onOpenChange={setIsAddProductOpen} 
           />
           
           <DropdownMenu>

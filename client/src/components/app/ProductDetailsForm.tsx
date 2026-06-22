@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { Product, Category } from '@/types/Products';
 import { Save, Loader2, Tag, Euro } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/state/hooks';
-import { fetchCategories } from '@/state/category/categorySlice';
+import { fetchCategories, fetchSubCategoriesByCategoryId } from '@/state/category/categorySlice';
 import {
   Select,
   SelectContent,
@@ -27,13 +27,14 @@ const ProductDetailsForm: React.FC<ProductDetailsFormProps> = ({
   setImageUrl,
 }) => {
   const dispatch = useAppDispatch();
-  const { categories, loading: categoriesLoading } = useAppSelector((state) => state.category);
+  const { categories, selectedSubCategories, loading: categoriesLoading } = useAppSelector((state) => state.category);
 
   const [formData, setFormData] = useState<Partial<Product>>({
     title: initialData?.title || '',
     description: initialData?.description || '',
     imageUrl: initialData?.imageUrl || '',
-    category: (initialData?.category) || {id: '', name: {sr: '', en: ''}, slug: ''},
+    mainCategory: (initialData?.mainCategory as any)?.id || (initialData?.mainCategory as any)?._id || "",
+    subCategory: (initialData?.subCategory as any)?.id || (initialData?.subCategory as any)?._id || (typeof initialData?.subCategory === 'string' ? initialData.subCategory : ""),
     price: initialData?.price || 0,
   });
 
@@ -43,10 +44,26 @@ const ProductDetailsForm: React.FC<ProductDetailsFormProps> = ({
     }
   }, [dispatch, categories.length]);
 
+  const selectedMainCategoryId = typeof formData.mainCategory === 'string' ? formData.mainCategory : (formData.mainCategory as any)?.id;
+
+  useEffect(() => {
+    if (selectedMainCategoryId) {
+      dispatch(fetchSubCategoriesByCategoryId(selectedMainCategoryId));
+    }
+  }, [dispatch, selectedMainCategoryId]);
+
   const handleCategoryChange = (value: string) => {
     setFormData((prev) => ({
       ...prev,
-      category: {id:value}
+      mainCategory: value as any,
+      subCategory: "", // Reset subcategory when main category changes
+    }));
+  };
+
+  const handleSubCategoryChange = (value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      subCategory: value
     }));
   };
 
@@ -65,6 +82,9 @@ const ProductDetailsForm: React.FC<ProductDetailsFormProps> = ({
     e.preventDefault();
     await onSubmit(formData);
   };
+
+  // Filter main categories (those without a parent)
+  const mainCategories = categories.filter(cat => !cat.parent);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -115,14 +135,14 @@ const ProductDetailsForm: React.FC<ProductDetailsFormProps> = ({
           </label>
           <Select
             onValueChange={handleCategoryChange}
-            value={formData.category?.id || ''}
+            value={selectedMainCategoryId || ''}
             disabled={categoriesLoading}
           >
             <SelectTrigger className="w-full">
               <SelectValue placeholder={categoriesLoading ? "Učitavanje..." : "Izaberi kategoriju"} />
             </SelectTrigger>
             <SelectContent>
-              {categories.map((cat) => (
+              {mainCategories.map((cat) => (
                 <SelectItem key={cat.id} value={cat.id.toString()}>
                   {cat?.name?.sr || ""}
                 </SelectItem>
@@ -130,7 +150,31 @@ const ProductDetailsForm: React.FC<ProductDetailsFormProps> = ({
             </SelectContent>
           </Select>
         </div>
+        
         <div>
+          <label className="flex items-center text-lg font-medium text-gray-700 mb-1">
+            <Tag className="w-4 h-4 mr-2" />
+            Podkategorija
+          </label>
+          <Select
+            onValueChange={handleSubCategoryChange}
+            value={formData.subCategory || ''}
+            disabled={categoriesLoading || !selectedMainCategoryId}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder={!selectedMainCategoryId ? "Prvo izaberi kategoriju" : "Izaberi podkategoriju"} />
+            </SelectTrigger>
+            <SelectContent>
+            {selectedSubCategories?.map((cat) => (
+                <SelectItem key={cat.id} value={cat.id.toString()}>
+                  {cat?.name?.sr || ""}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <div className="col-span-2">
           <label className="flex items-center text-lg font-medium text-gray-700 mb-1">
             <Euro className="w-4 h-4 mr-2" />
             Cena

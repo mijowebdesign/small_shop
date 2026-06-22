@@ -25,7 +25,6 @@ import { useAppDispatch } from "@/state/hooks";
         dispatch(fetchCategories());
       }
     }, [dispatch, categories.length]);
-
   
   return (
     <NavigationMenu>
@@ -54,6 +53,7 @@ import { useAppDispatch } from "@/state/hooks";
                 <ListItem
                   key={category?.name?.sr}
                   title={category?.name?.sr}
+                  id={category?.id}
                    href={`/products/${category?.slug}`}
                
                 >
@@ -77,12 +77,13 @@ const  ListItem = ({
   title,
   children,
   href,
+  id,
   ...props
-}: React.ComponentPropsWithoutRef<"li"> & { href: string }) => {
+}: React.ComponentPropsWithoutRef<"li"> & { href: string, id: string }) => {
   return (
     <li {...props}>
       <NavigationMenuLink asChild>
-        <Link to={href}>
+        <Link to={href} state={{categoryId:id}}  >
           <div className="flex flex-col gap-1 text-sm">
             <div className="leading-none font-medium">{title}</div>
             <div className="text-muted-foreground line-clamp-2">{children}</div>

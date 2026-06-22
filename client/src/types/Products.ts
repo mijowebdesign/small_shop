@@ -19,7 +19,7 @@ export interface Product {
     description: string;
     imageUrl: string;
     mainCategory: Category;
-    subCategory: Category;
+    subCategory: string | null;
     price: number;
 }
 

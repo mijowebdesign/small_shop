@@ -14,7 +14,7 @@ const AddProductForm: React.FC = () => {
   const handleSubmit = async (data: Partial<Product>) => {
 
     dispatch(createProduct(data)).unwrap().then(() => {
-      navigate('/'); // Navigate to home or product list after successful creation
+
     })
     .catch((err) => {
       console.error('Failed to create product:', err);
@@ -23,7 +23,7 @@ const AddProductForm: React.FC = () => {
   };
 
   return (
-  <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+  <div className="bg-white rounded-xl shadow-lg overflow-hidden w-full">
     {error && (
       <div className="p-8">
         <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-md text-sm">

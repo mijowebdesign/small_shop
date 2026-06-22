@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { SidebarFilters } from "@/components/app/SidebarFilters";
 import ProductCard from "@/components/app/ProductCard";
 import { useAppDispatch, useAppSelector } from "@/state/hooks";
@@ -13,7 +13,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation} from "react-router-dom";
+import { Loader2 } from "lucide-react";
 
 const Products: React.FC = () => {
   const { products, loading, currentPage, totalPages } = useAppSelector(
@@ -21,27 +22,30 @@ const Products: React.FC = () => {
   );
   const { categories } = useAppSelector((state) => state.category);
   const { categorySlug } = useParams();
+  const location = useLocation();
+  const categoryIdFromState = location.state?.categoryId;
 
-  const currentCategory = categories.find(
-    (cat) => cat.slug === categorySlug
-  );
-  const categoryId = currentCategory?.id;
+  const [pendingCategory, setPendingCategory] = useState(categorySlug);
 
   const PRODUTS_PER_PAGE = 9;
 
   const dispatch = useAppDispatch();
 
-  
+  useEffect(() => {
+    setPendingCategory(categorySlug);
+  }, [categorySlug]);
 
   useEffect(() => {
+    if (!categoryIdFromState) return;
+
     dispatch(
       fetchProducts({
         page: 1,
         limit: PRODUTS_PER_PAGE,
-        categoryId: categoryId,
+        categoryId: categoryIdFromState,
       })
     );
-  }, [dispatch, categoryId]);
+  }, [dispatch, categoryIdFromState]);
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -49,13 +53,26 @@ const Products: React.FC = () => {
         fetchProducts({
           page,
           limit: PRODUTS_PER_PAGE,
-          categoryId: categoryId,
+          categoryId: categoryIdFromState,
         })
       );
     }
   };
 
-  if (loading) return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  const isTransitioning = pendingCategory !== categorySlug;
+  const isCategoriesLoading = categories.length === 0;
+
+  if (loading || isCategoriesLoading || isTransitioning) return (
+    <div className="flex justify-center items-center h-screen">
+      <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+    </div>
+  );
+
+  if (!categoryIdFromState) return (
+    <div className="flex justify-center items-center h-screen text-gray-500 text-lg">
+      Kategorija nije pronađena.
+    </div>
+  );
 
   return (
     <>
