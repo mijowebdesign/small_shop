@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/state/hooks';
 import { createProduct } from '@/state/product/productSlice';
 import type { Product } from '@/types/Products';
-import ProductDetailsForm from './ProductDetailsForm';
+import ProductDetailsForm from '../ProductDetailsForm';
 
 const AddProductForm: React.FC = () => {
   const dispatch = useAppDispatch();

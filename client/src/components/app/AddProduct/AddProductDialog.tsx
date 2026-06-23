@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import AddProductForm from "@/components/app/AddProductForm";
+import AddProductForm from "@/components/app/AddProduct/AddProductForm";
 
 const AddProductDialog = ({ open, onOpenChange }: { open: boolean, onOpenChange: (open: boolean) => void }) => {
   return (

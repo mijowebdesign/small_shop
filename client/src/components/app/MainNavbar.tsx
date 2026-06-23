@@ -14,12 +14,14 @@ import { isUserAdmin, isUserManager} from "@/utils/utils";
 import NavbarItems from "./NavbarItems";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import logo from "@/assets/images.png"; 
+import AddCategoryDialog from "./AddCategory/AddCategoryDialog";
 import LoginDialog from "./LoginDialog";
-import AddProductDialog from "./AddProductDialog";
+import AddProductDialog from "./AddProduct/AddProductDialog";
 
 import { useAuth } from "@/context/AuthContext";
 
 const MainNavbar = () => {
+  const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
   const { user, logout } = useAuth();
@@ -58,12 +60,12 @@ const MainNavbar = () => {
                 <DropdownMenuItem onSelect={() => setIsAddProductOpen(true)} className="cursor-pointer">
                   Proizvod
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/categories/new" className="cursor-pointer">Kategorija</Link>
+                <DropdownMenuItem onSelect={() => setIsAddCategoryOpen(true)} className="cursor-pointer">
+                  Kategorija
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/subcategories/new" className="cursor-pointer">Podkategorija</Link>
-                </DropdownMenuItem>
+                {/* <DropdownMenuItem asChild>
+                  Podkategorija
+                </DropdownMenuItem> */}
               </DropdownMenuContent>
             </DropdownMenu>
           )}
@@ -74,6 +76,10 @@ const MainNavbar = () => {
           <AddProductDialog 
             open={isAddProductOpen} 
             onOpenChange={setIsAddProductOpen} 
+          />
+          <AddCategoryDialog 
+            open={isAddCategoryOpen} 
+            onOpenChange={setIsAddCategoryOpen} 
           />
           
           <DropdownMenu>
