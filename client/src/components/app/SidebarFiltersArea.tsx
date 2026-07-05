@@ -32,8 +32,6 @@ useEffect(() => {
   dispatch(fetchSubCategoriesByCategoryId(currentCategory?.id || ""))}
   }, [currentCategory?.id, dispatch]);
 
-  console.log(selectedSubCategories)
-
 
     return (
         <ScrollArea className="h-full ">

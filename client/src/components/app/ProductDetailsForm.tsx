@@ -83,9 +83,6 @@ const ProductDetailsForm: React.FC<ProductDetailsFormProps> = ({
     await onSubmit(formData);
   };
 
-  // Filter main categories (those without a parent)
-  const mainCategories = categories.filter(cat => !cat.parent);
-
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="flex justify-between items-center mb-6">
@@ -142,7 +139,7 @@ const ProductDetailsForm: React.FC<ProductDetailsFormProps> = ({
               <SelectValue placeholder={categoriesLoading ? "Učitavanje..." : "Izaberi kategoriju"} />
             </SelectTrigger>
             <SelectContent>
-              {mainCategories.map((cat) => (
+              {categories.map((cat) => (
                 <SelectItem key={cat.id} value={cat.id.toString()}>
                   {cat?.name?.sr || ""}
                 </SelectItem>

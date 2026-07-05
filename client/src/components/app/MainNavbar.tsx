@@ -16,12 +16,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import logo from "@/assets/images.png"; 
 import AddCategoryDialog from "./AddCategory/AddCategoryDialog";
 import LoginDialog from "./LoginDialog";
+import AddSubCategoryDialog from "@/components/app/AddSubCategory/AddSubCategoryDialog";
 import AddProductDialog from "./AddProduct/AddProductDialog";
 
 import { useAuth } from "@/context/AuthContext";
 
 const MainNavbar = () => {
   const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
+  const [isAddSubCategoryOpen, setIsAddSubCategoryOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
   const { user, logout } = useAuth();
@@ -61,11 +63,11 @@ const MainNavbar = () => {
                   Proizvod
                 </DropdownMenuItem>
                 <DropdownMenuItem onSelect={() => setIsAddCategoryOpen(true)} className="cursor-pointer">
-                  Kategorija
+                  Kategoriju
                 </DropdownMenuItem>
-                {/* <DropdownMenuItem asChild>
-                  Podkategorija
-                </DropdownMenuItem> */}
+                <DropdownMenuItem onSelect={() => setIsAddSubCategoryOpen(true)} className="cursor-pointer">
+                  Podkategoriju
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           )}
@@ -80,6 +82,10 @@ const MainNavbar = () => {
           <AddCategoryDialog 
             open={isAddCategoryOpen} 
             onOpenChange={setIsAddCategoryOpen} 
+          />
+          <AddSubCategoryDialog
+            open={isAddSubCategoryOpen}
+            onOpenChange={setIsAddSubCategoryOpen}
           />
           
           <DropdownMenu>
