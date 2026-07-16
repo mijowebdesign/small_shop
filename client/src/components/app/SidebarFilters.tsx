@@ -8,7 +8,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import SidebarFiltersArea from "@/components/app/SidebarFiltersArea";
+import SubCategoryFilters  from "@/components/app/SubCategoryFilters";
+import PriceFilters from './PriceFilters';
 
 export function SidebarFilters() {
   return (
@@ -23,13 +24,17 @@ export function SidebarFilters() {
               <SheetTitle className="sr-only">Filteri</SheetTitle>
               <SheetDescription className="sr-only">Filteri</SheetDescription>
             </SheetHeader>
-            <SidebarFiltersArea />
+            <div className="space-y-4">
+              <SubCategoryFilters />
+              <PriceFilters />
+            </div>
           </SheetContent>
         </Sheet>
       </div>
 
       <aside className="hidden lg:block w-64 p-4">
-        <SidebarFiltersArea />
+        <SubCategoryFilters />
+        <PriceFilters />
       </aside>
     </div>
   );

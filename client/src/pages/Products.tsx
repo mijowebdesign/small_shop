@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { SidebarFilters } from "@/components/app/SidebarFilters";
 import ProductCard from "@/components/app/ProductCard";
 import { useAppDispatch, useAppSelector } from "@/state/hooks";
 import type { Product } from "@/types/Products";
-import { fetchProducts } from "@/state/product/productSlice";
+import { fetchProducts, resetFilters } from "@/state/product/productSlice";
 
 import {
   Pagination,
@@ -13,62 +13,60 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { useParams, useLocation} from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 
 const Products: React.FC = () => {
-  const { products, loading, currentPage, totalPages } = useAppSelector(
-    (state) => state.product
-  );
+  const dispatch = useAppDispatch();
+  const { products, loading, currentPage, totalPages, filters } = useAppSelector((state) => state.product);
   const { categories } = useAppSelector((state) => state.category);
   const { categorySlug } = useParams();
-  const location = useLocation();
-  const categoryIdFromState = location.state?.categoryId;
-
-  const [pendingCategory, setPendingCategory] = useState(categorySlug);
 
   const PRODUTS_PER_PAGE = 9;
 
-  const dispatch = useAppDispatch();
+  const currentCategory = categories.find(cat => cat.slug === categorySlug);
+  const categoryId = currentCategory?.id;
 
   useEffect(() => {
-    setPendingCategory(categorySlug);
-  }, [categorySlug]);
+    // Resetuj filtere kada se promeni glavna kategorija
+    dispatch(resetFilters());
+  }, [categorySlug, dispatch]);
 
   useEffect(() => {
-    if (!categoryIdFromState) return;
-
-    dispatch(
-      fetchProducts({
-        page: 1,
-        limit: PRODUTS_PER_PAGE,
-        categoryId: categoryIdFromState,
-      })
-    );
-  }, [dispatch, categoryIdFromState]);
+    if (categoryId) {
+      dispatch(
+        fetchProducts({
+          page: 1,
+          limit: PRODUTS_PER_PAGE,
+          categoryId: categoryId,
+          subcategories: filters.subcategories,
+          priceRange: filters.priceRange,
+        })
+      );
+    }
+  }, [dispatch, categoryId, filters]);
 
   const handlePageChange = (page: number) => {
-    if (page >= 1 && page <= totalPages) {
+    if (page >= 1 && page <= totalPages && categoryId) {
       dispatch(
         fetchProducts({
           page,
           limit: PRODUTS_PER_PAGE,
-          categoryId: categoryIdFromState,
+          categoryId: categoryId,
+          subcategories: filters.subcategories,
+          priceRange: filters.priceRange,
         })
       );
     }
   };
 
-  const isTransitioning = pendingCategory !== categorySlug;
-  const isCategoriesLoading = categories.length === 0;
-
-  if (loading || isCategoriesLoading || isTransitioning) return (
+  if (loading || (categories.length === 0 && !products.length)) return (
     <div className="flex justify-center items-center h-screen">
       <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
     </div>
   );
 
-  if (!categoryIdFromState) return (
+  if (!categoryId && !loading) return (
     <div className="flex justify-center items-center h-screen text-gray-500 text-lg">
       Kategorija nije pronađena.
     </div>
@@ -82,16 +80,18 @@ const Products: React.FC = () => {
         <main className="flex-1 py-8 mb-4 flex flex-col">
           <div className="flex flex-wrap justify-start mb-8 gap-4 flex-1">
             {products.length > 0 ? (
-              products.map((product: Product) => (
-                <ProductCard
-                  key={product._id}
-                  id={product._id}
-                  title={product.title}
-                  categoryName={product?.mainCategory?.name?.sr || ""} 
-                  imageUrl={product.imageUrl}
-                  price={product.price}
-                />
-              ))
+              products
+                .filter((product): product is Product & { _id: string } => !!product._id)
+                .map((product: Product & { _id: string }) => (
+                  <ProductCard
+                    key={product._id}
+                    id={product._id}
+                    title={product.title}
+                    categoryName={product?.mainCategory?.name?.sr || ""}
+                    imageUrl={product.imageUrl}
+                    price={product.price}
+                  />
+                ))
             ) : (
               <div className="w-full text-center py-10 text-gray-500">
                 No products found.

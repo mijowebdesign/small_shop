@@ -6,8 +6,23 @@ import {
 } from './httpClient';
 import type { Product, PaginatedProducts } from '@/types/Products';
 
-export const getProducts = async (page: number = 1, limit: number = 9, categoryId?: string): Promise<PaginatedProducts> => {
-    const response = await getByPathAndParams<PaginatedProducts>('api/products', { page, limit, categoryId });
+export type GetProductsParams = {
+    page?: number;
+    limit?: number;
+    categoryId?: string;
+    subcategories?: string[];
+    priceRange?: [number, number];
+};
+export const getProducts = async (params: GetProductsParams = {}): Promise<PaginatedProducts> => {
+    const { priceRange, ...otherParams } = params;
+    const queryParams: Record<string, any> = { ...otherParams };
+
+    if (priceRange) {
+        queryParams.price_gte = priceRange[0];
+        queryParams.price_lte = priceRange[1];
+    }
+
+    const response = await getByPathAndParams<PaginatedProducts>('api/products', queryParams);
     return response.data;
 };
 
@@ -17,20 +32,12 @@ export const getProductById = async (id: string): Promise<Product> => {
 };
 
 export const createProduct = async (data: Partial<Product>): Promise<Product> => {
-    const payload = {
-        ...data,
-        category: (data.category && typeof data.category === 'object') ? (data.category as any).id : data.category
-    };
-    const response = await postByPathAndData<Product>('api/products', payload);
+    const response = await postByPathAndData<Product>('api/products', data);
     return response.data;
 };
 
 export const updateProduct = async (id: string, data: Partial<Product>): Promise<Product> => {
-    const payload = {
-        ...data,
-        category: (data.category && typeof data.category === 'object') ? (data.category as any).id : data.category
-    };
-    const response = await putByPathAndData<Product>(`api/products/${id}`, payload);
+    const response = await putByPathAndData<Product>(`api/products/${id}`, data);
     return response.data;
 };
 

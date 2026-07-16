@@ -27,7 +27,7 @@ export const fetchSubCategoriesByCategoryId = createAsyncThunk('category/fetchSu
 
 export const createCategory = createAsyncThunk(
     'category/createCategory',
-    async (categoryData: { name: { en:string,sr: string }, slug: string }, { rejectWithValue }) => {
+    async (categoryData: { name: { en:string,sr: string }, slug: string, parent?: string }, { rejectWithValue }) => {
         try {
            
             const newCategory = await createCategoryApi(categoryData);
@@ -79,8 +79,8 @@ const categorySlice = createSlice({
             })
             .addCase(createCategory.fulfilled, (state, action) => {
                 state.loading = false;
-                // Dodajemo novu kategoriju u postojeći niz kategorija
-                state.categories.push(action.payload);
+                // Ne radimo ništa ovdje, jer će fetchCategories biti pozvan iz komponente
+                // da osvježi cijelu listu.
             })
             .addCase(createCategory.rejected, (state, action) => {
                 state.loading = false;

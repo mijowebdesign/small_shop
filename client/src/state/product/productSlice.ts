@@ -1,16 +1,21 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { Product } from '@/types/Products';
-import { getProducts, getProductById, createProduct as createProductApi, updateProduct as updateProductApi, deleteProduct as deleteProductApi } from '@/services/productService';
+import { getProducts, getProductById, updateProduct as updateProductApi, deleteProduct as deleteProductApi, createProduct as createProductApi } from '@/services/productService';
 
 interface ProductState {
     products: Product[];
     selectedProduct: Product | null;
+    filters: {
+        subcategories: string[];
+        priceRange: [number, number];
+    };
     loading: boolean;
     error: string | null;
     currentPage: number;
     totalPages: number;
-    totalProducts: number;
 }
+
+const DEFAULT_PRICE_RANGE: [number, number] = [0, 10000];
 
 const initialState: ProductState = {
     products: [],
@@ -19,11 +24,21 @@ const initialState: ProductState = {
     error: null,
     currentPage: 1,
     totalPages: 1,
-    totalProducts: 0
+    filters: {
+        subcategories: [],
+        priceRange: DEFAULT_PRICE_RANGE,
+    },
 };
 
-export const fetchProducts = createAsyncThunk('product/fetchProducts', async ({ page, limit, categoryId }: { page?: number; limit?: number; categoryId?: string } = {}) => {
-    return await getProducts(page, limit, categoryId);
+export const fetchProducts = createAsyncThunk('products/fetchProducts', async (params: { 
+    page: number; 
+    limit: number; 
+    categoryId?: string;
+    subcategories?: string[];
+    priceRange?: [number, number];
+}) => {
+    const data = await getProducts(params);
+    return data;
 });
 
 export const fetchProductById = createAsyncThunk('product/fetchProductById', async (id: string) => {
@@ -52,7 +67,17 @@ const productSlice = createSlice({
         setSelectedProduct(state, action: PayloadAction<Product | null>) {
             state.selectedProduct = action.payload;
         },
-        clearError(state) {
+        setSubCategoryFilters(state, action: PayloadAction<string[]>) {
+            state.filters.subcategories = action.payload;
+        },
+        setPriceFilter(state, action: PayloadAction<[number, number]>) {
+            state.filters.priceRange = action.payload;
+        },
+        resetFilters(state) {
+            state.filters.subcategories = [];
+            state.filters.priceRange = DEFAULT_PRICE_RANGE;
+        },
+        clearProductError(state) {
             state.error = null;
         }
     },
@@ -67,7 +92,6 @@ const productSlice = createSlice({
                 state.products = action.payload.products;
                 state.currentPage = action.payload.currentPage;
                 state.totalPages = action.payload.totalPages;
-                state.totalProducts = action.payload.totalProducts;
             })
             .addCase(fetchProducts.rejected, (state, action) => {
                 state.loading = false;
@@ -118,5 +142,5 @@ const productSlice = createSlice({
     }
 });
 
-export const { setSelectedProduct, clearError } = productSlice.actions;
+export const { setSelectedProduct, setSubCategoryFilters, setPriceFilter, resetFilters, clearProductError } = productSlice.actions;
 export default productSlice.reducer;

@@ -48,9 +48,9 @@ const LoginForm: React.FC = () => {
                         action={formAction}
                         className="space-y-5"
                     >
-                        {(loginError || state?.errors?.general) && (
+                        {(loginError || state?.errors?.email) && (
                             <div className="bg-red-50 border-l-4 border-red-500 p-3 rounded text-sm text-red-700">
-                                {loginError || state?.errors?.general}
+                                {loginError || state?.errors?.email}
                             </div>
                         )}
 

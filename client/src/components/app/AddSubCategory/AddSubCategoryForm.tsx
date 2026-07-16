@@ -62,7 +62,8 @@ const AddSubCategoryForm: React.FC<AddSubCategoryFormProps> = ({ onFinished }) =
         slug: generateSlug(data.name.en),
         parent: data.parent,
       })).unwrap();
-
+    // Nakon uspješnog kreiranja, ponovo dohvatimo sve kategorije
+    dispatch(fetchCategories());
       form.reset();
       onFinished();
     } catch (err: any) {
@@ -90,7 +91,7 @@ const AddSubCategoryForm: React.FC<AddSubCategoryFormProps> = ({ onFinished }) =
                 <SelectContent>
                   {categories.map(cat => (
                     <SelectItem key={cat.id} value={cat.id}>
-                      {cat.name.sr}
+                      {cat?.name?.sr}
                     </SelectItem>
                   ))}
                 </SelectContent>

@@ -1,18 +1,41 @@
 import Product from '../models/Product.js';
 import mongoose from 'mongoose';
 
-export const getProducts = async (req, res) => {
+
+export const getProducts = async (req, res) => { // eslint-disable-line no-unused-vars
+  console.log('Request stigao:', req.method, req.url);
   try {
-    const { page = 1, limit = 9, categoryId } = req.query;
+    const { page = 1, limit = 9, categoryId, price_gte, price_lte } = req.query;
+    const subcategories = req.query['subcategories[]']; // Ispravan način da se pristupi parametru
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
     // Build filter object
     const filter = {};
+
+    // Filter po glavnoj kategoriji
     if (categoryId) {
       if (!mongoose.Types.ObjectId.isValid(categoryId)) {
         return res.status(400).json({ message: 'Nevalidan ID kategorije' });
       }
       filter.mainCategory = categoryId;
+    }
+    
+    // Filter po podkategorijama - osiguravamo da je uvek niz
+    let subcategoriesArray = subcategories ? (Array.isArray(subcategories) ? subcategories : [subcategories]) : [];
+
+    if (subcategoriesArray.length > 0) {
+      // Proveravamo da li su svi ID-jevi validni
+      if (subcategoriesArray.some(id => !mongoose.Types.ObjectId.isValid(id))) {
+        return res.status(400).json({ message: 'Jedan ili više ID-jeva podkategorija su nevalidni' });
+      }
+      filter.subCategory = { $in: subcategoriesArray };
+    }
+
+    // Filter po ceni
+    if (price_gte || price_lte) {
+      filter.price = {};
+      if (price_gte) filter.price.$gte = parseFloat(price_gte);
+      if (price_lte) filter.price.$lte = parseFloat(price_lte);
     }
 
     const totalProducts = await Product.countDocuments(filter);

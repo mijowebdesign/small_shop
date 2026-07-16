@@ -63,7 +63,7 @@ PaginationLink.displayName = "PaginationLink"
 const PaginationPrevious = ({
   className,
   ...props
-}: React.ComponentProps<typeof PaginationLink>) => (
+}: PaginationLinkProps) => (
   <PaginationLink
     aria-label="Go to previous page"
     size="default"
@@ -79,7 +79,7 @@ PaginationPrevious.displayName = "PaginationPrevious"
 const PaginationNext = ({
   className,
   ...props
-}: React.ComponentProps<typeof PaginationLink>) => (
+}: PaginationLinkProps) => (
   <PaginationLink
     aria-label="Go to next page"
     size="default"

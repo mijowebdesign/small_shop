@@ -14,7 +14,8 @@ export const getAccessToken = () => accessToken;
 
 const filterEmptyValues = (obj: Record<string, any>) => {
     return Object.entries(obj).reduce((acc, [key, value]) => {
-        if (value !== undefined && value !== null && value !== '') {
+        const isArrayAndEmpty = Array.isArray(value) && value.length === 0;
+        if (value !== undefined && value !== null && value !== '' && !isArrayAndEmpty) {
             acc[key] = value;
         }
         return acc;
