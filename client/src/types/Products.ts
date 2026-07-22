@@ -1,16 +1,17 @@
+
+interface LocalizedText {
+  en: string;
+  sr: string;
+}
+
 export interface Category {
     id: string;
-    name?: {
-        sr: string;
-        en: string;
-    };
+    name?: LocalizedText;
     slug?: string;
-    description?: {
-        en: string;
-        sr: string;
-    };
+    description?: LocalizedText;
     parent?: string 
 }
+
 
 
 export interface Product {
@@ -21,6 +22,16 @@ export interface Product {
     mainCategory: Category;
     subCategory: string | null;
     price: number;
+}
+
+// Jedna kategorija u okviru landing response-a
+interface LandingCategory {
+  name: LocalizedText;
+  data: Partial<Product>[];
+}
+
+export interface LandingData {
+  [slug: string]: LandingCategory;
 }
 
 export interface PaginatedProducts {

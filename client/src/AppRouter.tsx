@@ -1,13 +1,13 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import RegistrationForm from './pages/auth/RegistrationForm';
-import Dashboard from './pages/Dashboard';
 import AdminPanel from './pages/AdminPanel';  
 import MainNavbar from './components/app/MainNavbar';
 import { useAuth } from './context/AuthContext';
 import UserPanel from './pages/UserPanel';
 import ProductDetails from './pages/ProductDetails';
 import Products from './pages/Products';
+import LandingPage from './pages/LandaingPage';
 
 
 const AppLayout = ({ children }: { children: React.ReactNode}) => {
@@ -89,7 +89,7 @@ const AppRouter: React.FC = () => {
       
       <Route 
         path="/" 
-        element={<AppLayout><Dashboard /></AppLayout>} 
+        element={<AppLayout><LandingPage /></AppLayout>} 
       />
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>

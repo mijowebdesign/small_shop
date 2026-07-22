@@ -1,10 +1,11 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { Product } from '@/types/Products';
-import { getProducts, getProductById, updateProduct as updateProductApi, deleteProduct as deleteProductApi, createProduct as createProductApi } from '@/services/productService';
+import type { Product, LandingData } from '@/types/Products';
+import { getProducts, getProductById, updateProduct as updateProductApi, deleteProduct as deleteProductApi, createProduct as createProductApi, getLandingPageProducts } from '@/services/productService';
 
 interface ProductState {
     products: Product[];
     selectedProduct: Product | null;
+    landingPageProducts: LandingData;
     filters: {
         subcategories: string[];
         priceRange: [number, number];
@@ -20,6 +21,11 @@ const DEFAULT_PRICE_RANGE: [number, number] = [0, 10000];
 const initialState: ProductState = {
     products: [],
     selectedProduct: null,
+    landingPageProducts: {
+        vegetables: { name: { en: 'Vegetables', sr: 'Povrća' }, data: [] },
+        fruits: { name: { en: 'Fruits', sr: 'Voće' }, data: [] },
+        milk: { name: { en: 'Milk', sr: 'Mleko' }, data: [] }
+    },
     loading: false,
     error: null,
     currentPage: 1,
@@ -58,6 +64,10 @@ export const createProduct = createAsyncThunk('product/createProduct', async (da
 export const deleteProduct = createAsyncThunk('product/deleteProduct', async (id: string) => {
     await deleteProductApi(id);
     return id;
+});
+
+export const fetchLandingPageProducts = createAsyncThunk('product/fetchLandingPageProducts', async () => {
+    return await getLandingPageProducts();
 });
 
 const productSlice = createSlice({
@@ -138,7 +148,22 @@ const productSlice = createSlice({
                 if (state.selectedProduct && state.selectedProduct._id === action.payload) {
                     state.selectedProduct = null;
                 }
-            });
+            })
+            .addCase(fetchLandingPageProducts.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchLandingPageProducts.fulfilled, (state, action) => {
+                state.loading = false;
+                state.landingPageProducts = action.payload;
+            })
+            .addCase(fetchLandingPageProducts.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || 'Greška pri učitavanju proizvoda za landing stranicu';
+            })
+            ;
+            
+            
     }
 });
 

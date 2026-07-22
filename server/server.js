@@ -7,6 +7,7 @@ import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import productRoutes from './routes/productRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
+import landingRoutes from './routes/landingRoutes.js';
 import { verifyToken, authorizeRoles } from './middleware/authMiddleware.js';
 import passport from './config/passport.js'; // Import configured passport
 
@@ -26,8 +27,8 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 app.use(passport.initialize()); // Initialize passport
-
 // Routes
+app.use('/api/landing', landingRoutes); 
 app.use('/auth', authRoutes); 
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);

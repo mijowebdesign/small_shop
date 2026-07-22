@@ -4,7 +4,7 @@ import {
     putByPathAndData, 
     deleteByPath 
 } from './httpClient';
-import type { Product, PaginatedProducts } from '@/types/Products';
+import type { Product, PaginatedProducts, LandingData } from '@/types/Products';
 
 export type GetProductsParams = {
     page?: number;
@@ -43,4 +43,9 @@ export const updateProduct = async (id: string, data: Partial<Product>): Promise
 
 export const deleteProduct = async (id: string): Promise<void> => {
     await deleteByPath(`api/products/${id}`);
+};
+
+export const getLandingPageProducts = async (): Promise<LandingData> => {
+    const response = await getByPathAndParams<LandingData>('api/landing');
+    return response.data;
 };
